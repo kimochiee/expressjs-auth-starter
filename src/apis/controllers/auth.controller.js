@@ -37,9 +37,9 @@ const login = catchAsync(async (req, res, next) => {
 
   const user = await authService.loginWithEmailAndPassword(email, password);
   const refreshToken = await tokenService.createToken(req, user);
-  attachCookies(res, user, refreshToken);
+  const { accessTokenJWT } = attachCookies(res, user, refreshToken);
 
-  res.status(statusCode.OK).json({ user });
+  res.status(statusCode.OK).json({ user, accessToken: accessTokenJWT });
 });
 
 const logout = catchAsync(async (req, res, next) => {
@@ -48,11 +48,13 @@ const logout = catchAsync(async (req, res, next) => {
   res.status(statusCode.OK).json({ msg: 'User logged out' });
 });
 
-// const logout = catchAsync(async (req, res, next) => {
-//   await authService.logout(res, req.user._id);
+const refreshToken = catchAsync(async (req, res, next) => {
+  const { refreshToken } = req.cookies;
 
-//   res.status(statusCode.OK).json({ msg: 'User logged out' });
-// });
+  const accessToken = await authService.refreshAuth(refreshToken);
+
+  res.status(statusCode.OK).json({ accessToken });
+});
 
 const verifyEmail = catchAsync(async (req, res, next) => {
   const { verificationToken, email } = req.body;
@@ -86,14 +88,11 @@ const resetPassword = catchAsync(async (req, res, next) => {
   res.status(statusCode.OK).json({ msg: 'Reset password successgully' });
 });
 
-const refreshToken = catchAsync(async (req, res, next) => {
-  const { refreshToken } = req.cookies;
-});
-
 export default {
   register,
   login,
   logout,
+  refreshToken,
   verifyEmail,
   forgotPassword,
   resetPassword,

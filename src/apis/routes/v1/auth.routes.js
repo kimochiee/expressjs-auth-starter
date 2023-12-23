@@ -10,9 +10,14 @@ router.post('/register', authValidation.register, authController.register);
 router.post('/login', authValidation.login, authController.login);
 router.get(
   '/logout',
-  // authValidation.logout,
+  authValidation.logout,
   auth.authenticateUser,
   authController.logout
+);
+router.get(
+  '/refreshToken',
+  authValidation.refreshToken,
+  authController.refreshToken
 );
 router.post(
   '/verify-email',

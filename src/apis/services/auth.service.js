@@ -55,6 +55,16 @@ const verifyEmail = async (verificationToken, email) => {
   await user.save();
 };
 
+const refreshAuth = async (refreshTokenJWT) => {
+  const payload = tokenService.verifyJwtToken(refreshTokenJWT);
+
+  const user = await userService.getUserById(payload.user._id);
+
+  const accessToken = tokenService.generateAccessToken(user);
+
+  return accessToken;
+};
+
 const forgotPassword = async (email) => {
   const user = await userService.getUserByEmail(email);
 
@@ -88,6 +98,7 @@ export default {
   loginWithEmailAndPassword,
   logout,
   verifyEmail,
+  refreshAuth,
   forgotPassword,
   resetPassword,
 };
