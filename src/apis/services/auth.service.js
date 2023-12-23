@@ -55,23 +55,6 @@ const verifyEmail = async (verificationToken, email) => {
   await user.save();
 };
 
-const attachCookies = (res, user, refreshToken) => {
-  const accessTokenJWT = tokenService.generateAccessToken(user);
-  const refreshTokenJWT = tokenService.generateRefreshToken(user, refreshToken);
-
-  res.cookie('accessToken', accessTokenJWT, {
-    httpOnly: true,
-    maxAge: env.jwt_access_cookie_expired * 60 * 1000,
-    secure: env.build_mode === 'prod' ? true : false,
-  });
-
-  res.cookie('refreshToken', refreshTokenJWT, {
-    httpOnly: true,
-    maxAge: env.jwt_refresh_cookie_expired * 24 * 60 * 60 * 1000,
-    secure: env.build_mode === 'prod' ? true : false,
-  });
-};
-
 const forgotPassword = async (email) => {
   const user = await userService.getUserByEmail(email);
 
@@ -105,7 +88,6 @@ export default {
   loginWithEmailAndPassword,
   logout,
   verifyEmail,
-  attachCookies,
   forgotPassword,
   resetPassword,
 };

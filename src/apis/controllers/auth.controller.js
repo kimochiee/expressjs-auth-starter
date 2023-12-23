@@ -1,5 +1,6 @@
 import catchAsync from '../../utils/catchAsync.js';
 import statusCode from '../../config/status.js';
+import attachCookies from '../../utils/attachCookies.js';
 
 import userService from '../services/user.service.js';
 import authService from '../services/auth.service.js';
@@ -35,7 +36,8 @@ const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
   const user = await authService.loginWithEmailAndPassword(email, password);
-  await tokenService.createToken(req, res, user);
+  const refreshToken = await tokenService.createToken(req, user);
+  attachCookies(res, user, refreshToken);
 
   res.status(statusCode.OK).json({ user });
 });
@@ -45,6 +47,12 @@ const logout = catchAsync(async (req, res, next) => {
 
   res.status(statusCode.OK).json({ msg: 'User logged out' });
 });
+
+// const logout = catchAsync(async (req, res, next) => {
+//   await authService.logout(res, req.user._id);
+
+//   res.status(statusCode.OK).json({ msg: 'User logged out' });
+// });
 
 const verifyEmail = catchAsync(async (req, res, next) => {
   const { verificationToken, email } = req.body;
@@ -79,7 +87,7 @@ const resetPassword = catchAsync(async (req, res, next) => {
 });
 
 const refreshToken = catchAsync(async (req, res, next) => {
-  
+  const { refreshToken } = req.cookies;
 });
 
 export default {

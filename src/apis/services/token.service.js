@@ -1,10 +1,10 @@
 import Token from '../models/token.model.js';
 import ApiError from '../../utils/ApiError.js';
 import statusCode from '../../config/status.js';
+import attachCookies from '../../utils/attachCookies.js';
+
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-
-import authService from './auth.service.js';
 
 import env from '../../config/env.js';
 
@@ -24,7 +24,7 @@ const verifyJwtToken = (token) => {
   return jwt.verify(token, env.jwt_secret);
 };
 
-const createToken = async (req, res, user) => {
+const createToken = async (req, user) => {
   const existingToken = await findTokenByUserId(user._id);
   let refreshToken = '';
 
@@ -33,16 +33,16 @@ const createToken = async (req, res, user) => {
       throw new ApiError(statusCode.UNAUTHORIZED, 'Invalid credentials');
     }
     refreshToken = existingToken.refreshToken;
-    authService.attachCookies(res, user, refreshToken);
   } else {
     refreshToken = crypto.randomBytes(40).toString('hex');
     const userAgent = req.headers['user-agent'];
     const ip = req.ip;
     const userToken = { refreshToken, userAgent, ip, user: user._id };
 
-    authService.attachCookies(res, user, refreshToken);
     await Token.create(userToken);
   }
+
+  return refreshToken;
 };
 
 const findTokenByUserId = async (userId) => {

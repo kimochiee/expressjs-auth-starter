@@ -8,7 +8,12 @@ import auth from '../../../middlewares/auth.middleware.js';
 
 router.post('/register', authValidation.register, authController.register);
 router.post('/login', authValidation.login, authController.login);
-router.get('/logout', auth.authenticateUser, authController.logout);
+router.get(
+  '/logout',
+  // authValidation.logout,
+  auth.authenticateUser,
+  authController.logout
+);
 router.post(
   '/verify-email',
   authValidation.verifyEmail,

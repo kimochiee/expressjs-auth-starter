@@ -22,6 +22,15 @@ const login = catchAsync(async (req, res, next) => {
   next();
 });
 
+// const logout = catchAsync(async (req, res, next) => {
+//   const validate = Joi.object({
+//     refreshToken: Joi.string().required().trim(),
+//   }).options({ abortEarly: false });
+
+//   await validate.validateAsync(req.cookies);
+//   next();
+// });
+
 const verifyEmail = catchAsync(async (req, res, next) => {
   const validate = Joi.object({
     verificationToken: Joi.string().required().trim(),
@@ -55,6 +64,7 @@ const resetPassword = catchAsync(async (req, res, next) => {
 export default {
   register,
   login,
+  // logout,
   verifyEmail,
   forgotPassword,
   resetPassword,

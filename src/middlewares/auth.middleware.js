@@ -1,8 +1,8 @@
 import ApiError from '../utils/ApiError.js';
 import statusCode from '../config/status.js';
+import attachCookies from '../utils/attachCookies.js';
 
 import tokenService from '../apis/services/token.service.js';
-import authService from '../apis/services/auth.service.js';
 
 const authenticateUser = async (req, res, next) => {
   try {
@@ -19,7 +19,7 @@ const authenticateUser = async (req, res, next) => {
         payload.refreshToken
       );
 
-      authService.attachCookies(res, payload.user, existingToken.refreshToken);
+      attachCookies(res, payload.user, existingToken.refreshToken);
 
       req.user = payload.user;
       return next();
